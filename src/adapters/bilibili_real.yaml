@@ -1,0 +1,71 @@
+# B 站真实适配器
+# 基于实际 B 站 HTML 结构
+
+name: B 站（真实）
+target: bilibili.com
+version: 1.0.0
+
+# 认证配置
+auth:
+  type: cookie
+  required:
+    - SESSDATA
+    - bili_jct
+
+# 选择器定义（基于实际 B 站结构）
+selectors:
+  # 首页视频列表
+  home_video_list: "ul.video-list > li, div.video-box"
+  video_title: "h2.title a, a.title"
+  video_up: "span.up-name, a.up"
+  video_play: "span.play, div.stat-view"
+  video_duration: "span.duration, div.duration"
+  
+  # 搜索结果
+  search_result: "ul.video-list > li, div.video-item"
+  search_title: "h2.title a, a.title"
+  search_up: "span.up-name, a.up"
+  search_desc: "p.desc, div.desc"
+  
+  # 视频详情
+  video_info: "div.video-info"
+  video_desc: "div.desc-info"
+  video_tags: "div.tag-area"
+
+# 命令定义
+commands:
+  home:
+    url: https://www.bilibili.com/
+    extract:
+      list_selector: "{{home_video_list}}"
+      fields:
+        - title: "{{video_title}}"
+        - up: "{{video_up}}"
+        - play: "{{video_play}}"
+        - duration: "{{video_duration}}"
+  
+  search:
+    url: https://search.bilibili.com/all?keyword={query}
+    extract:
+      list_selector: "{{search_result}}"
+      fields:
+        - title: "{{search_title}}"
+        - up: "{{search_up}}"
+        - desc: "{{search_desc}}"
+
+# 反爬虫配置
+anti_bot:
+  user_agents:
+    - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    - "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  random_delay: true
+  min_delay: 1000
+  max_delay: 3000
+
+# 输出配置
+output:
+  default_format: table
+  supported_formats:
+    - json
+    - table
+    - markdown

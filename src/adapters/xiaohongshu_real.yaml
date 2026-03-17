@@ -1,0 +1,74 @@
+# 小红书真实适配器
+# 基于实际小红书 HTML 结构
+
+name: 小红书（真实）
+target: xiaohongshu.com
+version: 1.0.0
+
+# 认证配置
+auth:
+  type: cookie
+  required:
+    - web_session
+
+# 选择器定义（基于实际小红书结构）
+selectors:
+  # 首页推荐
+  home_note_list: "section.main div.note-item, div.note-container"
+  note_title: "div.title, h3.title"
+  note_author: "span.author, div.author"
+  note_likes: "span.likes, div.interaction"
+  note_cover: "img.cover:image-src"
+  
+  # 搜索结果
+  search_result: "div.note-item, section.result-item"
+  search_title: "div.title, h3.title"
+  search_author: "span.author"
+  search_desc: "div.desc, p.summary"
+  
+  # 用户主页
+  user_notes: "div.note-item"
+  user_info: "div.user-info"
+  user_name: "span.nickname"
+  user_fans: "span.fans"
+  
+  # 笔记详情
+  note_content: "div.content, article.content"
+  note_tags: "div.tags, span.tag"
+
+# 命令定义
+commands:
+  explore:
+    url: https://www.xiaohongshu.com/explore
+    extract:
+      list_selector: "{{home_note_list}}"
+      fields:
+        - title: "{{note_title}}"
+        - author: "{{note_author}}"
+        - likes: "{{note_likes}}"
+  
+  search:
+    url: https://www.xiaohongshu.com/search_result?keyword={query}&source=web_search_result_notes
+    extract:
+      list_selector: "{{search_result}}"
+      fields:
+        - title: "{{search_title}}"
+        - author: "{{search_author}}"
+        - desc: "{{search_desc}}"
+
+# 反爬虫配置
+anti_bot:
+  user_agents:
+    - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    - "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"
+  random_delay: true
+  min_delay: 2000
+  max_delay: 5000
+
+# 输出配置
+output:
+  default_format: table
+  supported_formats:
+    - json
+    - table
+    - markdown
