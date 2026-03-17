@@ -35,7 +35,7 @@ program
   .option('--output <format>', '输出格式 (json|table|markdown)', 'table')
   .option('--use-cookie', '使用 Cookie 注入')
   .action(async (cmd, args, options) => {
-    const { executeBilibili } = await import('./commands/bilibili.js');
+    const { executeBilibili } = await import('../src/commands/bilibili.js');
     await executeBilibili(cmd, args, options);
   });
 
@@ -48,7 +48,7 @@ program
   .option('--output <format>', '输出格式 (json|table|markdown)', 'table')
   .option('--use-cookie', '使用 Cookie 注入')
   .action(async (cmd, args, options) => {
-    const { executeXiaohongshu } = await import('./commands/xiaohongshu.js');
+    const { executeXiaohongshu } = await import('../src/commands/xiaohongshu.js');
     await executeXiaohongshu(cmd, args, options);
   });
 
@@ -58,7 +58,7 @@ program
   .option('--feishu', '通过飞书显示二维码')
   .option('--cookie <cookie>', '直接配置 Cookie')
   .action(async (platform, options) => {
-    const { executeLogin } = await import('./commands/login.js');
+    const { executeLogin } = await import('../src/commands/login.js');
     await executeLogin(platform, options);
   });
 
@@ -68,7 +68,7 @@ program
   .option('--depth <number>', '探索深度', '1')
   .option('--output <format>', '输出格式', 'markdown')
   .action(async (url, options) => {
-    const { executeExplore } = await import('./commands/explore.js');
+    const { executeExplore } = await import('../src/commands/explore.js');
     await executeExplore(url, options);
   });
 
@@ -76,7 +76,7 @@ program
   .command('config <action> [key] [value]')
   .description('配置管理 (get|set|list)')
   .action(async (action, key, value) => {
-    const { executeConfig } = await import('./commands/config.js');
+    const { executeConfig } = await import('../src/commands/config.js');
     await executeConfig(action, key, value);
   });
 
@@ -84,7 +84,7 @@ program
   .command('doctor')
   .description('诊断工具')
   .action(async () => {
-    const { executeDoctor } = await import('./commands/doctor.js');
+    const { executeDoctor } = await import('../src/commands/doctor.js');
     await executeDoctor();
   });
 
