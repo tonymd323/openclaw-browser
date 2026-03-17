@@ -1,0 +1,117 @@
+name: B 站
+target: bilibili.com
+description: B ilibili 视频网站适配器
+version: 0.1.0
+
+# 认证配置
+auth:
+  type: cookie
+  required:
+    - SESSDATA
+    - bili_jct
+    - DedeUserID
+  optional:
+    - buvid3
+
+# 选择器定义
+selectors:
+  # 首页视频列表
+  home_video_list: "ul.video-list > li"
+  video_title: "a.title"
+  video_up: "span.up-name"
+  video_play: "span.play"
+  video_duration: "span.duration"
+  
+  # 搜索结果
+  search_result: "ul.video-list > li"
+  search_title: "h2 a"
+  search_up: "span.up-name"
+  
+  # 视频详情
+  video_info: "div.video-info"
+  video_desc: "div.desc"
+  video_tags: "div.tags"
+  
+  # 弹幕
+  danmaku_item: "d"
+  danmaku_time: "p"
+  danmaku_text: "text"
+
+# 命令定义
+commands:
+  home:
+    url: https://www.bilibili.com/
+    actions:
+      - type: navigate
+      - type: scroll
+        times: 3
+      - type: extract
+        selector: "{{home_video_list}}"
+        fields:
+          - title: "{{video_title}}"
+          - up: "{{video_up}}"
+          - play: "{{video_play}}"
+          - duration: "{{video_duration}}"
+  
+  search:
+    url: https://search.bilibili.com/all?keyword={query}
+    actions:
+      - type: navigate
+      - type: scroll
+        times: 5
+      - type: extract
+        selector: "{{search_result}}"
+        fields:
+          - title: "{{search_title}}"
+          - up: "{{search_up}}"
+  
+  video:
+    url: https://www.bilibili.com/video/{bvid}
+    actions:
+      - type: navigate
+      - type: extract
+        selector: "{{video_info}}"
+        fields:
+          - title: "{{video_title}}"
+          - desc: "{{video_desc}}"
+          - tags: "{{video_tags}}"
+  
+  danmaku:
+    url: https://www.bilibili.com/video/{bvid}
+    actions:
+      - type: navigate
+      - type: extract_danmaku
+        selector: "{{danmaku_item}}"
+        fields:
+          - time: "{{danmaku_time}}"
+          - text: "{{danmaku_text}}"
+
+# 输出配置
+output:
+  default_format: table
+  supported_formats:
+    - json
+    - table
+    - markdown
+  
+  table_columns:
+    home:
+      - title
+      - up
+      - play
+      - duration
+    
+    search:
+      - title
+      - up
+    
+    video:
+      - title
+      - desc
+
+# 限制配置
+limits:
+  max_results: 100
+  default_results: 20
+  scroll_delay: 1000  # 滚动延迟（毫秒）
+  request_timeout: 30000  # 请求超时（毫秒）

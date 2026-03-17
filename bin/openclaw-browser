@@ -1,0 +1,103 @@
+#!/usr/bin/env node
+
+/**
+ * OpenClaw Browser CLI
+ * Make any website your CLI - AI-powered browser automation
+ */
+
+import { Command } from 'commander';
+import { readFileSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+import chalk from 'chalk';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const packageJson = JSON.parse(readFileSync(join(__dirname, '../package.json'), 'utf-8'));
+
+const program = new Command();
+
+// 全局配置
+program
+  .name('openclaw-browser')
+  .version(packageJson.version)
+  .description('Make any website your CLI - AI-powered browser automation for Lighthouse servers')
+  .option('--debug', '启用调试模式')
+  .option('--verbose', '详细输出')
+  .option('--timeout <number>', '超时时间（毫秒）', '30000');
+
+// 内置命令
+program
+  .command('bilibili')
+  .description('B 站相关命令')
+  .argument('<command>', '子命令 (home|search|video|danmaku|login)')
+  .argument('[args...]', '参数')
+  .option('--limit <number>', '结果数量', '20')
+  .option('--output <format>', '输出格式 (json|table|markdown)', 'table')
+  .option('--use-cookie', '使用 Cookie 注入')
+  .action(async (cmd, args, options) => {
+    const { executeBilibili } = await import('./commands/bilibili.js');
+    await executeBilibili(cmd, args, options);
+  });
+
+program
+  .command('xiaohongshu')
+  .description('小红书相关命令')
+  .argument('<command>', '子命令 (explore|search|user|login)')
+  .argument('[args...]', '参数')
+  .option('--limit <number>', '结果数量', '20')
+  .option('--output <format>', '输出格式 (json|table|markdown)', 'table')
+  .option('--use-cookie', '使用 Cookie 注入')
+  .action(async (cmd, args, options) => {
+    const { executeXiaohongshu } = await import('./commands/xiaohongshu.js');
+    await executeXiaohongshu(cmd, args, options);
+  });
+
+program
+  .command('login <platform>')
+  .description('登录网站 (bilibili|xiaohongshu)')
+  .option('--feishu', '通过飞书显示二维码')
+  .option('--cookie <cookie>', '直接配置 Cookie')
+  .action(async (platform, options) => {
+    const { executeLogin } = await import('./commands/login.js');
+    await executeLogin(platform, options);
+  });
+
+program
+  .command('explore <url>')
+  .description('探索网站结构（AI 驱动）')
+  .option('--depth <number>', '探索深度', '1')
+  .option('--output <format>', '输出格式', 'markdown')
+  .action(async (url, options) => {
+    const { executeExplore } = await import('./commands/explore.js');
+    await executeExplore(url, options);
+  });
+
+program
+  .command('config <action> [key] [value]')
+  .description('配置管理 (get|set|list)')
+  .action(async (action, key, value) => {
+    const { executeConfig } = await import('./commands/config.js');
+    await executeConfig(action, key, value);
+  });
+
+program
+  .command('doctor')
+  .description('诊断工具')
+  .action(async () => {
+    const { executeDoctor } = await import('./commands/doctor.js');
+    await executeDoctor();
+  });
+
+// 错误处理
+program.on('error', (err) => {
+  console.error(chalk.red(`错误：${err.message}`));
+  process.exit(1);
+});
+
+// 执行
+program.parse(process.argv);
+
+// 显示帮助（如果没有参数）
+if (!process.argv.slice(2).length) {
+  program.outputHelp();
+}
