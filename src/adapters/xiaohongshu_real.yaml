@@ -41,20 +41,20 @@ commands:
   explore:
     url: https://www.xiaohongshu.com/explore
     extract:
-      list_selector: "{{home_note_list}}"
+      list_selector: "section.main div.note-item, div.note-container"
       fields:
-        - title: "{{note_title}}"
-        - author: "{{note_author}}"
-        - likes: "{{note_likes}}"
+        - title: "div.title, h3.title"
+        - author: "span.author, div.author"
+        - likes: "span.likes, div.interaction"
   
   search:
     url: https://www.xiaohongshu.com/search_result?keyword={query}&source=web_search_result_notes
     extract:
-      list_selector: "{{search_result}}"
+      list_selector: "div.note-item, section.result-item"
       fields:
-        - title: "{{search_title}}"
-        - author: "{{search_author}}"
-        - desc: "{{search_desc}}"
+        - title: "div.title, h3.title"
+        - author: "span.author"
+        - desc: "div.desc, p.summary"
 
 # 反爬虫配置
 anti_bot:

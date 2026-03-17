@@ -37,21 +37,21 @@ commands:
   home:
     url: https://www.bilibili.com/
     extract:
-      list_selector: "{{home_video_list}}"
+      list_selector: "ul.video-list > li, div.video-box"
       fields:
-        - title: "{{video_title}}"
-        - up: "{{video_up}}"
-        - play: "{{video_play}}"
-        - duration: "{{video_duration}}"
+        - title: "h2.title a, a.title"
+        - up: "span.up-name, a.up"
+        - play: "span.play, div.stat-view"
+        - duration: "span.duration, div.duration"
   
   search:
     url: https://search.bilibili.com/all?keyword={query}
     extract:
-      list_selector: "{{search_result}}"
+      list_selector: "ul.video-list > li, div.video-item"
       fields:
-        - title: "{{search_title}}"
-        - up: "{{search_up}}"
-        - desc: "{{search_desc}}"
+        - title: "h2.title a, a.title"
+        - up: "span.up-name, a.up"
+        - desc: "p.desc, div.desc"
 
 # 反爬虫配置
 anti_bot:
