@@ -1,0 +1,129 @@
+name: 小红书
+target: xiaohongshu.com
+description: 小红书笔记分享平台适配器
+version: 0.1.0
+
+# 认证配置
+auth:
+  type: cookie
+  required:
+    - web_session
+  optional:
+    - a1
+    - webid
+
+# 选择器定义
+selectors:
+  # 首页推荐
+  home_note_list: "section.main div.note-item"
+  note_title: "div.title"
+  note_author: "span.author"
+  note_likes: "span.likes"
+  note_cover: "img.cover"
+  
+  # 搜索结果
+  search_result: "section.main div.note-item"
+  search_title: "div.title"
+  search_author: "span.author"
+  search_desc: "div.desc"
+  
+  # 用户主页
+  user_notes: "section.main div.note-item"
+  user_info: "div.user-info"
+  user_name: "span.nickname"
+  user_fans: "span.fans"
+  
+  # 笔记详情
+  note_content: "div.content"
+  note_tags: "div.tags"
+  note_comments: "div.comment"
+
+# 命令定义
+commands:
+  explore:
+    url: https://www.xiaohongshu.com/explore
+    actions:
+      - type: navigate
+      - type: scroll
+        times: 5
+        delay: 1000
+      - type: extract
+        selector: "{{home_note_list}}"
+        fields:
+          - title: "{{note_title}}"
+          - author: "{{note_author}}"
+          - likes: "{{note_likes}}"
+  
+  search:
+    url: https://www.xiaohongshu.com/search_result?keyword={query}&source=web_search_result_notes
+    actions:
+      - type: navigate
+      - type: scroll
+        times: 5
+        delay: 1000
+      - type: extract
+        selector: "{{search_result}}"
+        fields:
+          - title: "{{search_title}}"
+          - author: "{{search_author}}"
+          - desc: "{{search_desc}}"
+  
+  user:
+    url: https://www.xiaohongshu.com/user/profile/{user_id}
+    actions:
+      - type: navigate
+      - type: scroll
+        times: 3
+        delay: 1000
+      - type: extract
+        selector: "{{user_notes}}"
+        fields:
+          - title: "{{note_title}}"
+          - likes: "{{note_likes}}"
+  
+  note:
+    url: https://www.xiaohongshu.com/explore/{note_id}
+    actions:
+      - type: navigate
+      - type: extract
+        selector: "{{note_content}}"
+        fields:
+          - content: "{{note_content}}"
+          - tags: "{{note_tags}}"
+
+# 输出配置
+output:
+  default_format: table
+  supported_formats:
+    - json
+    - table
+    - markdown
+  
+  table_columns:
+    explore:
+      - title
+      - author
+      - likes
+    
+    search:
+      - title
+      - author
+      - desc
+    
+    user:
+      - title
+      - likes
+
+# 限制配置
+limits:
+  max_results: 100
+  default_results: 20
+  scroll_delay: 1000
+  request_timeout: 30000
+
+# 反爬虫策略
+anti_bot:
+  user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+  random_delay: true
+  min_delay: 1000
+  max_delay: 3000
