@@ -70,3 +70,4 @@ AI 层 (小詹 Agent 集成)
 
 MIT
 
+# E2E Test
